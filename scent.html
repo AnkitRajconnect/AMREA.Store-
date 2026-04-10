@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Scent — AMRÉA</title>
+  <meta name="description" content="One oil. One size. One price. AMRÉA's first and only fragrance — an oil-based scent made in Grasse that becomes something personal." />
+  <meta property="og:title" content="The Scent — AMRÉA" />
+  <meta property="og:description" content="23 of 40 bottles remaining. The first collection will not be restocked." />
+  <meta property="og:image" content="og-image.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --charcoal:#0e0c0a;--amber:#b5a898;--ivory:#e8ddd0;--gold:#c9a96e;
+      --serif:'EB Garamond',Georgia,serif;--sans:'Jost',sans-serif;
+    }
+    html{scroll-behavior:smooth;}
+    body{background:var(--charcoal);color:var(--ivory);font-family:var(--sans);font-weight:300;line-height:1.8;overflow-x:hidden;cursor:none;}
+
+    .cursor{position:fixed;width:10px;height:10px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s;mix-blend-mode:screen;}
+    .cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(201,169,110,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .4s,height .4s;}
+
+    .page-veil{position:fixed;inset:0;background:var(--charcoal);z-index:200;pointer-events:none;opacity:0;transition:opacity .5s;}
+    .page-veil.active{opacity:1;pointer-events:all;}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:2rem 3rem;display:flex;align-items:center;justify-content:space-between;transition:transform .4s cubic-bezier(.25,.46,.45,.94),background .4s;}
+    nav.hidden{transform:translateY(-100%);}
+    nav.scrolled{background:rgba(14,12,10,.85);backdrop-filter:blur(12px);padding:1.2rem 3rem;}
+    .nav-logo{font-family:var(--serif);font-size:1.4rem;letter-spacing:.35em;text-transform:uppercase;color:var(--ivory);text-decoration:none;}
+    .nav-links{display:flex;gap:2.5rem;list-style:none;}
+    .nav-links a{font-family:var(--sans);font-size:.7rem;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);text-decoration:none;transition:color .4s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--ivory);}
+
+    /* SCENT HERO — split layout */
+    .scent-hero{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      padding-top:100px;
+    }
+
+    .scent-hero-visual{
+      position:relative;
+      overflow:hidden;
+      background:radial-gradient(ellipse at 40% 60%,#2e1e10 0%,#130f0b 55%,#0e0c0a 100%);
+    }
+    .scent-hero-visual::after{
+      content:'';position:absolute;inset:0;
+      background:
+        radial-gradient(ellipse at 30% 40%,rgba(201,169,110,.08) 0%,transparent 55%),
+        radial-gradient(ellipse at 70% 80%,rgba(181,168,152,.04) 0%,transparent 50%);
+    }
+    .vial-graphic{
+      position:absolute;
+      bottom:8%;left:50%;
+      transform:translateX(-50%);
+      width:min(220px,40%);
+      display:flex;flex-direction:column;align-items:center;
+      gap:0;
+      z-index:2;
+    }
+    .vial-cap{
+      width:34%;
+      height:28px;
+      background:linear-gradient(180deg,#2a2520 0%,#1a1510 100%);
+      border-radius:4px 4px 0 0;
+      position:relative;
+    }
+    .vial-cap::after{
+      content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+      width:90%;height:2px;background:var(--gold);opacity:.4;
+    }
+    .vial-neck{
+      width:22%;
+      height:40px;
+      background:linear-gradient(180deg,#1e1914 0%,#171210 100%);
+    }
+    .vial-body{
+      width:100%;
+      height:260px;
+      background:linear-gradient(150deg,rgba(20,15,10,.3) 0%,rgba(10,8,6,.6) 100%);
+      border:1px solid rgba(201,169,110,.18);
+      position:relative;
+      overflow:hidden;
+      border-radius:3px;
+      backdrop-filter:blur(4px);
+    }
+    .vial-fill{
+      position:absolute;
+      bottom:0;left:0;right:0;
+      height:72%;
+      background:linear-gradient(180deg,rgba(181,140,80,.12) 0%,rgba(141,100,40,.25) 100%);
+    }
+    .vial-fill::before{
+      content:'';position:absolute;top:0;left:0;right:0;
+      height:1px;background:rgba(201,169,110,.25);
+    }
+    .vial-label-area{
+      position:absolute;
+      bottom:30%;left:50%;transform:translateX(-50%);
+      text-align:center;
+      width:80%;
+    }
+    .vial-label-name{
+      font-family:var(--serif);font-size:.85rem;letter-spacing:.25em;
+      text-transform:uppercase;color:var(--gold);opacity:.7;
+    }
+    .vial-shine{
+      position:absolute;top:10%;left:15%;
+      width:8%;height:55%;
+      background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,transparent 100%);
+      border-radius:4px;
+    }
+    .vial-base{
+      width:108%;
+      height:12px;
+      background:linear-gradient(180deg,#1a1510 0%,#0e0c0a 100%);
+      border-radius:0 0 2px 2px;
+    }
+
+    .scent-hero-content{
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      padding:6rem 5rem 6rem 4rem;
+    }
+
+    .scent-label{
+      font-size:.62rem;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);
+      margin-bottom:2rem;
+      opacity:0;transform:translateY(12px);animation:fadeUp 1s .3s forwards;
+    }
+    .scent-name{
+      font-family:var(--serif);font-size:clamp(2.5rem,5vw,4.5rem);font-weight:400;
+      color:var(--ivory);letter-spacing:.08em;line-height:1.1;
+      margin-bottom:1.2rem;
+      opacity:0;transform:translateY(16px);animation:fadeUp 1.2s .5s forwards;
+    }
+    .scent-subtitle{
+      font-family:var(--serif);font-style:italic;font-size:1.05rem;
+      color:var(--amber);margin-bottom:3.5rem;
+      opacity:0;transform:translateY(12px);animation:fadeUp 1s .7s forwards;
+    }
+    .scent-availability{
+      display:flex;align-items:center;gap:1rem;
+      margin-bottom:3rem;
+      opacity:0;animation:fadeUp .8s 1s forwards;
+    }
+    .avail-dot{
+      width:6px;height:6px;border-radius:50%;background:var(--gold);
+      box-shadow:0 0 8px rgba(201,169,110,.5);
+      animation:pulse 2s infinite;
+    }
+    @keyframes pulse{0%,100%{box-shadow:0 0 6px rgba(201,169,110,.4);}50%{box-shadow:0 0 14px rgba(201,169,110,.7);}}
+    .avail-text{font-size:.72rem;letter-spacing:.15em;color:var(--amber);}
+    .avail-strong{color:var(--ivory);}
+
+    .scent-reserve-btn{
+      display:inline-block;
+      font-family:var(--sans);font-size:.67rem;font-weight:400;
+      letter-spacing:.28em;text-transform:uppercase;
+      color:var(--charcoal);background:var(--gold);
+      text-decoration:none;padding:1.1rem 3rem;
+      transition:background .5s,letter-spacing .4s;
+      opacity:0;animation:fadeUp .8s 1.15s forwards;
+      align-self:flex-start;
+    }
+    .scent-reserve-btn:hover{background:var(--ivory);letter-spacing:.34em;}
+
+    @keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+
+    /* NOTES SECTION */
+    .notes-section{
+      padding:9rem 3rem;
+      max-width:1100px;margin:0 auto;
+    }
+    .section-label{
+      font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);
+      margin-bottom:2.5rem;display:block;
+    }
+    .notes-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:.5px;
+      border:1px solid rgba(181,168,152,.1);
+      margin-bottom:7rem;
+    }
+    .note-card{
+      padding:3rem 2.5rem;
+      border-right:1px solid rgba(181,168,152,.1);
+      position:relative;
+    }
+    .note-card:last-child{border-right:none;}
+    .note-tier{
+      font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);opacity:.6;
+      margin-bottom:1.2rem;display:block;
+    }
+    .note-title{
+      font-family:var(--serif);font-size:1.4rem;color:var(--ivory);font-weight:400;
+      margin-bottom:1rem;
+    }
+    .note-desc{font-size:.82rem;color:var(--amber);line-height:1.85;}
+
+    /* ESSAY */
+    .scent-essay{
+      display:grid;
+      grid-template-columns:1fr 1.6fr;
+      gap:7rem;
+      align-items:start;
+      margin-bottom:7rem;
+    }
+    .essay-sticky{position:sticky;top:140px;}
+    .essay-heading{
+      font-family:var(--serif);font-size:clamp(1.8rem,3.5vw,2.8rem);
+      color:var(--ivory);font-weight:400;line-height:1.25;
+    }
+    .essay-heading em{color:var(--gold);}
+    .essay-body{font-size:.95rem;color:var(--amber);line-height:2;}
+    .essay-body p+p{margin-top:1.8rem;}
+
+    /* WORLD SECTION — Diderot */
+    .world-section{margin-bottom:7rem;}
+    .world-heading{
+      font-family:var(--serif);font-size:clamp(1.5rem,3vw,2.2rem);
+      color:var(--ivory);font-weight:400;margin-bottom:3rem;
+    }
+    .world-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:1px;
+      background:rgba(181,168,152,.08);
+    }
+    .world-cell{
+      background:var(--charcoal);
+      padding:2.5rem 2rem;
+      display:flex;flex-direction:column;gap:.8rem;
+    }
+    .world-cell-img{
+      aspect-ratio:1;
+      background:linear-gradient(135deg,#1e1710 0%,#0e0c0a 100%);
+      margin-bottom:.5rem;
+      position:relative;overflow:hidden;
+    }
+    .world-cell-img::after{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at 50% 70%,rgba(201,169,110,.06) 0%,transparent 70%);
+    }
+    .world-cell-name{font-family:var(--serif);font-size:.9rem;color:var(--ivory);font-style:italic;}
+    .world-cell-desc{font-size:.72rem;color:var(--amber);line-height:1.7;opacity:.75;}
+
+    /* CRAFT + PRICE */
+    .craft-price{
+      display:grid;grid-template-columns:1fr 1fr;gap:6rem;
+      margin-bottom:7rem;border-top:1px solid rgba(181,168,152,.1);
+      padding-top:5rem;
+    }
+    .craft-block{}
+    .craft-title{font-family:var(--serif);font-size:1.6rem;color:var(--ivory);font-weight:400;margin-bottom:2rem;}
+    .craft-text{font-size:.88rem;color:var(--amber);line-height:1.95;}
+    .craft-text p+p{margin-top:1.2rem;}
+    .craft-list{list-style:none;margin-top:2rem;display:flex;flex-direction:column;gap:1rem;}
+    .craft-list li{display:flex;gap:1rem;align-items:baseline;font-size:.82rem;color:var(--amber);}
+    .craft-list li::before{content:'—';color:var(--gold);opacity:.5;flex-shrink:0;}
+
+    .price-block{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;}
+    .price-context{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--amber);margin-bottom:2.5rem;line-height:1.7;}
+    .price-tag{
+      font-family:var(--serif);font-size:clamp(3rem,6vw,5rem);
+      color:var(--ivory);font-weight:400;line-height:1;
+      margin-bottom:.5rem;
+    }
+    .price-size{font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--amber);margin-bottom:2.5rem;}
+    .btn-primary{
+      display:inline-block;font-family:var(--sans);font-size:.67rem;font-weight:400;
+      letter-spacing:.28em;text-transform:uppercase;
+      color:var(--charcoal);background:var(--gold);
+      text-decoration:none;padding:1.1rem 3rem;
+      transition:background .5s,letter-spacing .4s;
+    }
+    .btn-primary:hover{background:var(--ivory);letter-spacing:.34em;}
+    .scarcity-note{font-size:.65rem;letter-spacing:.1em;color:rgba(181,168,152,.4);margin-top:1.5rem;}
+
+    /* REVEAL */
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .9s cubic-bezier(.25,.46,.45,.94),transform .9s cubic-bezier(.25,.46,.45,.94);}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .reveal-delay-1{transition-delay:.12s;}
+    .reveal-delay-2{transition-delay:.25s;}
+    .reveal-delay-3{transition-delay:.38s;}
+    .reveal-delay-4{transition-delay:.52s;}
+
+    footer{padding:3rem 3rem;border-top:1px solid rgba(181,168,152,.08);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;}
+    .footer-logo{font-family:var(--serif);font-size:1.1rem;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;text-decoration:none;}
+    .footer-socials{display:flex;gap:1.5rem;}
+    .footer-socials a{color:rgba(181,168,152,.35);font-size:.85rem;text-decoration:none;transition:color .4s;}
+    .footer-socials a:hover{color:var(--gold);}
+    .footer-privacy{font-size:.62rem;letter-spacing:.1em;color:rgba(181,168,152,.25);}
+
+    @media(max-width:900px){
+      .scent-hero{grid-template-columns:1fr;}
+      .scent-hero-visual{min-height:50vh;}
+      .scent-hero-content{padding:4rem 2rem;}
+      .notes-section{padding:5rem 1.5rem;}
+      .notes-grid{grid-template-columns:1fr;}
+      .note-card{border-right:none;border-bottom:1px solid rgba(181,168,152,.1);}
+      .note-card:last-child{border-bottom:none;}
+      .scent-essay{grid-template-columns:1fr;gap:3rem;}
+      .essay-sticky{position:static;}
+      .world-grid{grid-template-columns:repeat(2,1fr);}
+      .craft-price{grid-template-columns:1fr;gap:4rem;}
+      footer{padding:2.5rem 1.5rem;}
+    }
+    @media(max-width:480px){
+      .nav-links{display:none;}
+      .world-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <div class="page-veil" id="pageVeil"></div>
+
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo" data-link>Amréa</a>
+    <ul class="nav-links">
+      <li><a href="story.html" data-link>The Story</a></li>
+      <li><a href="scent.html" data-link class="active">The Scent</a></li>
+      <li><a href="waitlist.html" data-link>Reserve</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO — SPLIT -->
+  <div class="scent-hero">
+    <div class="scent-hero-visual">
+      <div class="vial-graphic">
+        <div class="vial-cap"></div>
+        <div class="vial-neck"></div>
+        <div class="vial-body">
+          <div class="vial-fill"></div>
+          <div class="vial-shine"></div>
+          <div class="vial-label-area">
+            <span class="vial-label-name">Amréa</span>
+          </div>
+        </div>
+        <div class="vial-base"></div>
+      </div>
+    </div>
+    <div class="scent-hero-content">
+      <span class="scent-label">The Scent — No. I</span>
+      <h1 class="scent-name">The Warm<br/>Note</h1>
+      <p class="scent-subtitle">An oil-based fragrance that does not announce itself.<br/>It waits. Then it arrives.</p>
+
+      <div class="scent-availability">
+        <div class="avail-dot"></div>
+        <span class="avail-text"><span class="avail-strong">23</span> of 40 bottles remaining</span>
+      </div>
+
+      <a href="waitlist.html" class="scent-reserve-btn" data-link>Reserve your bottle</a>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="notes-section">
+    <span class="section-label reveal">Composition</span>
+    <div class="notes-grid">
+      <div class="note-card reveal">
+        <span class="note-tier">Opening — first hour</span>
+        <h3 class="note-title">Cedar, resin, warm wood</h3>
+        <p class="note-desc">On first contact: a quiet density. The cedar is not forest — it is the interior of an old chest. The resin sits underneath, slow and dry. There is no sharpness.</p>
+      </div>
+      <div class="note-card reveal reveal-delay-2">
+        <span class="note-tier">Heart — hours two through four</span>
+        <h3 class="note-title">Amber, skin, the warm note</h3>
+        <p class="note-desc">The fragrance settles. The amber is not sweet — it is geological, the warmth of something pressed and aged for a long time. It begins to absorb the temperature of the skin.</p>
+      </div>
+      <div class="note-card reveal reveal-delay-3">
+        <span class="note-tier">Drydown — the hours that remain</span>
+        <h3 class="note-title">Patchouli, musk, time</h3>
+        <p class="note-desc">This is where it becomes personal. The patchouli is earthy without being heavy. The musk is almost invisible. What remains is not the fragrance — it is you, wearing it.</p>
+      </div>
+    </div>
+
+    <!-- ESSAY -->
+    <div class="scent-essay">
+      <div class="essay-sticky reveal">
+        <h2 class="essay-heading">Made for skin,<br/>not for <em>the room.</em></h2>
+      </div>
+      <div class="essay-body reveal reveal-delay-1">
+        <p>Most fragrances are designed to project. They are made to cross a space, to arrive before you do, to make an impression from several feet away. Alcohol makes this possible — it is a vehicle for distance.</p>
+        <p>The Warm Note does not project. It holds. Applied to the wrist, the crook of the elbow, the side of the neck — it stays close. For the first hour it is almost imperceptible to the wearer. The oil is absorbing warmth, adjusting.</p>
+        <p>The second hour is different. Something begins to emerge — not a perfume, but a quality. Warm. Slightly woody. Resinous in a way that does not feel heavy. Skin-close and slow.</p>
+        <p>By the fourth hour it is entirely your own. The base chemistry of the oil has responded to your specific temperature, your movement through the day, the particular warmth of your skin. Someone beside you will notice something they cannot categorise — something quiet and present and distinctly yours.</p>
+        <p>This is what oil does that alcohol cannot. It does not evaporate. It stays. It becomes part of the surface it was placed on. It absorbs the day and returns it as something different.</p>
+        <p>Wear it on clean, lightly moisturised skin. Apply before you dress. Do not rub. Let it sit. The warm note will find you, in its own time.</p>
+      </div>
+    </div>
+
+    <!-- WORLD — Diderot -->
+    <div class="world-section reveal">
+      <h2 class="world-heading">The world it arrives in</h2>
+      <div class="world-grid">
+        <div class="world-cell">
+          <div class="world-cell-img"></div>
+          <span class="world-cell-name">Morning light through linen</span>
+          <p class="world-cell-desc">The diffuse warmth before the day has begun. Slow, soft, with no urgency to it.</p>
+        </div>
+        <div class="world-cell">
+          <div class="world-cell-img"></div>
+          <span class="world-cell-name">A worn leather notebook</span>
+          <p class="world-cell-desc">Something that has been held often. That carries the warmth of previous afternoons in its surface.</p>
+        </div>
+        <div class="world-cell">
+          <div class="world-cell-img"></div>
+          <span class="world-cell-name">Warm stone, late afternoon</span>
+          <p class="world-cell-desc">The heat retained from a long day. Dry, mineral, faintly earthy.</p>
+        </div>
+        <div class="world-cell">
+          <div class="world-cell-img"></div>
+          <span class="world-cell-name">A quiet room with dark wood</span>
+          <p class="world-cell-desc">Unhurried. Dense without being heavy. Familiar without being common.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CRAFT + PRICE -->
+    <div class="craft-price">
+      <div class="craft-block reveal">
+        <h3 class="craft-title">What it takes</h3>
+        <div class="craft-text">
+          <p>The oil is blended in Grasse in a workshop that has changed very little in forty years. The formula was developed over several months, working with a perfumer who declined to use ingredients they couldn't source directly.</p>
+          <p>Each bottle is filled by hand. Each vial is dark glass, to protect the oil from light. There are no batch numbers. There is no automation.</p>
+        </div>
+        <ul class="craft-list">
+          <li>Cold-pressed carrier oil base</li>
+          <li>Natural resin and cedar extraction</li>
+          <li>Small-batch hand-filling in Grasse</li>
+          <li>Dark glass vial — 15ml</li>
+          <li>No fixatives. No synthetics in the base.</li>
+        </ul>
+      </div>
+      <div class="price-block reveal reveal-delay-2">
+        <p class="price-context">The process above took eight months. The oil has been blended twice and adjusted once. The formula is now fixed. When these forty bottles are gone, the first collection ends.</p>
+        <div class="price-tag">€195</div>
+        <div class="price-size">15ml · Pure oil concentrate</div>
+        <a href="waitlist.html" class="btn-primary" data-link>Reserve your bottle</a>
+        <p class="scarcity-note">The first collection will not be restocked.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <a href="index.html" class="footer-logo" data-link>Amréa</a>
+    <div class="footer-socials">
+      <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+    </div>
+    <p class="footer-privacy">Privacy · GDPR · © AMRÉA</p>
+  </footer>
+
+  <script>
+    const cursor=document.getElementById('cursor');
+    const ring=document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+    function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cursor.style.left=mx+'px';cursor.style.top=my+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);}
+    anim();
+    document.querySelectorAll('a,button').forEach(el=>{
+      el.addEventListener('mouseenter',()=>{cursor.style.width='18px';cursor.style.height='18px';ring.style.width='54px';ring.style.height='54px';});
+      el.addEventListener('mouseleave',()=>{cursor.style.width='10px';cursor.style.height='10px';ring.style.width='36px';ring.style.height='36px';});
+    });
+
+    const navbar=document.getElementById('navbar');
+    let lastScroll=0;
+    window.addEventListener('scroll',()=>{
+      const cur=window.scrollY;
+      if(cur>lastScroll&&cur>80)navbar.classList.add('hidden');else navbar.classList.remove('hidden');
+      if(cur>30)navbar.classList.add('scrolled');else navbar.classList.remove('scrolled');
+      lastScroll=cur;
+    });
+
+    const reveals=document.querySelectorAll('.reveal');
+    const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.1});
+    reveals.forEach(r=>obs.observe(r));
+
+    const veil=document.getElementById('pageVeil');
+    document.querySelectorAll('[data-link]').forEach(link=>{
+      link.addEventListener('click',e=>{
+        e.preventDefault();
+        const href=link.getAttribute('href');
+        veil.classList.add('active');
+        setTimeout(()=>{window.location.href=href;},500);
+      });
+    });
+    window.addEventListener('pageshow',()=>{setTimeout(()=>veil.classList.remove('active'),80);});
+  </script>
+</body>
+</html>

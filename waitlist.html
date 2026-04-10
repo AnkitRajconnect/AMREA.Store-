@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reserve — AMRÉA</title>
+  <meta name="description" content="The first AMRÉA collection is limited to 40 bottles. Reserve your place quietly." />
+  <meta property="og:title" content="Reserve — AMRÉA" />
+  <meta property="og:description" content="For those who notice. 23 of 40 bottles remaining." />
+  <meta property="og:image" content="og-image.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --charcoal:#0e0c0a;--amber:#b5a898;--ivory:#e8ddd0;--gold:#c9a96e;
+      --serif:'EB Garamond',Georgia,serif;--sans:'Jost',sans-serif;
+    }
+    html{scroll-behavior:smooth;}
+    body{background:var(--charcoal);color:var(--ivory);font-family:var(--sans);font-weight:300;line-height:1.8;overflow-x:hidden;cursor:none;min-height:100vh;}
+
+    .cursor{position:fixed;width:10px;height:10px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s;mix-blend-mode:screen;}
+    .cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(201,169,110,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .4s,height .4s;}
+
+    .page-veil{position:fixed;inset:0;background:var(--charcoal);z-index:200;pointer-events:none;opacity:0;transition:opacity .5s;}
+    .page-veil.active{opacity:1;pointer-events:all;}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:2rem 3rem;display:flex;align-items:center;justify-content:space-between;transition:transform .4s cubic-bezier(.25,.46,.45,.94),background .4s;}
+    nav.hidden{transform:translateY(-100%);}
+    nav.scrolled{background:rgba(14,12,10,.85);backdrop-filter:blur(12px);padding:1.2rem 3rem;}
+    .nav-logo{font-family:var(--serif);font-size:1.4rem;letter-spacing:.35em;text-transform:uppercase;color:var(--ivory);text-decoration:none;}
+    .nav-links{display:flex;gap:2.5rem;list-style:none;}
+    .nav-links a{font-family:var(--sans);font-size:.7rem;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);text-decoration:none;transition:color .4s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--ivory);}
+
+    /* PAGE LAYOUT — full-screen centered */
+    .waitlist-page{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+    }
+
+    /* LEFT — atmospheric */
+    .waitlist-left{
+      position:relative;
+      overflow:hidden;
+      background:radial-gradient(ellipse at 40% 50%,#231810 0%,#120e0b 55%,#0e0c0a 100%);
+      display:flex;flex-direction:column;justify-content:flex-end;
+      padding:5rem 4rem;
+    }
+    .waitlist-left::before{
+      content:'';position:absolute;inset:0;
+      background:
+        radial-gradient(ellipse at 20% 30%,rgba(201,169,110,.06) 0%,transparent 55%),
+        radial-gradient(ellipse at 80% 80%,rgba(181,168,152,.03) 0%,transparent 50%);
+    }
+    .wl-left-content{position:relative;z-index:1;}
+
+    .wl-brand{
+      font-family:var(--serif);font-size:clamp(3rem,6vw,5.5rem);
+      color:var(--ivory);letter-spacing:.2em;font-weight:400;
+      margin-bottom:1.5rem;
+      opacity:0;transform:translateY(20px);animation:fadeUp 1.2s .3s forwards;
+    }
+    .wl-tagline{
+      font-family:var(--serif);font-style:italic;
+      font-size:1.05rem;color:var(--amber);
+      opacity:0;transform:translateY(12px);animation:fadeUp 1s .7s forwards;
+      margin-bottom:4rem;
+    }
+
+    .wl-counter-block{
+      opacity:0;animation:fadeUp 1s 1s forwards;
+    }
+    .wl-counter-label{
+      font-size:.6rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);
+      margin-bottom:1rem;display:block;
+    }
+    .wl-counter-wrap{
+      display:flex;align-items:baseline;gap:.4rem;
+      margin-bottom:.8rem;
+    }
+    .wl-num{
+      font-family:var(--serif);font-size:clamp(3.5rem,7vw,5rem);
+      color:var(--ivory);font-weight:400;line-height:1;
+    }
+    .wl-of{font-family:var(--serif);font-size:1.8rem;color:var(--amber);opacity:.35;}
+    .wl-total{font-family:var(--serif);font-size:1.8rem;color:var(--amber);opacity:.35;}
+    .wl-counter-caption{font-size:.78rem;color:var(--amber);opacity:.7;letter-spacing:.06em;}
+
+    /* Progress bar */
+    .wl-progress{
+      margin-top:2.5rem;
+      width:100%;max-width:280px;
+    }
+    .wl-progress-track{
+      height:1px;background:rgba(181,168,152,.12);position:relative;
+    }
+    .wl-progress-fill{
+      position:absolute;top:0;left:0;bottom:0;
+      width:57.5%; /* 23/40 */
+      background:linear-gradient(to right,rgba(201,169,110,.3),var(--gold));
+      transition:width 1.5s cubic-bezier(.25,.46,.45,.94);
+    }
+    .wl-progress-labels{
+      display:flex;justify-content:space-between;
+      margin-top:.8rem;
+      font-size:.6rem;letter-spacing:.15em;color:rgba(181,168,152,.35);
+    }
+
+    .wl-scarcity{
+      margin-top:3rem;
+      font-size:.72rem;color:rgba(181,168,152,.4);
+      letter-spacing:.06em;
+      border-top:1px solid rgba(181,168,152,.08);
+      padding-top:2rem;
+      max-width:320px;
+      line-height:1.7;
+    }
+
+    /* RIGHT — form */
+    .waitlist-right{
+      display:flex;flex-direction:column;justify-content:center;
+      padding:5rem 5rem 5rem 5rem;
+      position:relative;
+    }
+    .waitlist-right::before{
+      content:'';
+      position:absolute;top:0;left:0;
+      width:1px;height:100%;
+      background:rgba(181,168,152,.08);
+    }
+
+    .wl-form-eyebrow{
+      font-size:.62rem;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);
+      margin-bottom:2.5rem;display:block;
+      opacity:0;transform:translateY(10px);animation:fadeUp .9s .5s forwards;
+    }
+    .wl-form-heading{
+      font-family:var(--serif);font-size:clamp(2rem,4vw,3.2rem);
+      color:var(--ivory);font-weight:400;line-height:1.15;
+      margin-bottom:1.2rem;
+      opacity:0;transform:translateY(14px);animation:fadeUp 1.1s .65s forwards;
+    }
+    .wl-form-sub{
+      font-size:.85rem;color:var(--amber);line-height:1.85;
+      margin-bottom:3.5rem;max-width:360px;
+      opacity:0;transform:translateY(10px);animation:fadeUp .9s .85s forwards;
+    }
+
+    /* FORM */
+    .wl-form{
+      display:flex;flex-direction:column;gap:1.2rem;
+      max-width:400px;
+      opacity:0;animation:fadeUp .9s 1.05s forwards;
+    }
+
+    .wl-field{display:flex;flex-direction:column;gap:.5rem;}
+    .wl-label{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);}
+    .wl-input{
+      background:transparent;
+      border:none;
+      border-bottom:1px solid rgba(181,168,152,.18);
+      color:var(--ivory);
+      font-family:var(--sans);font-size:.9rem;font-weight:300;
+      padding:.9rem 0;
+      outline:none;
+      transition:border-color .4s;
+      letter-spacing:.04em;
+    }
+    .wl-input::placeholder{color:rgba(181,168,152,.3);}
+    .wl-input:focus{border-color:rgba(201,169,110,.55);}
+
+    .wl-submit{
+      margin-top:.8rem;
+      background:var(--gold);
+      color:var(--charcoal);
+      border:none;
+      font-family:var(--sans);font-size:.67rem;font-weight:400;
+      letter-spacing:.28em;text-transform:uppercase;
+      padding:1.2rem 3rem;
+      cursor:none;
+      transition:background .5s,letter-spacing .4s;
+      align-self:flex-start;
+    }
+    .wl-submit:hover{background:var(--ivory);letter-spacing:.34em;}
+
+    /* Success state */
+    .wl-success{
+      display:none;
+      flex-direction:column;
+      gap:1.5rem;
+      max-width:360px;
+    }
+    .wl-success.visible{display:flex;}
+    .wl-success-icon{color:var(--gold);font-size:1.5rem;}
+    .wl-success-title{
+      font-family:var(--serif);font-size:1.8rem;color:var(--ivory);font-weight:400;
+    }
+    .wl-success-msg{font-size:.85rem;color:var(--amber);line-height:1.85;}
+
+    .wl-privacy{
+      margin-top:2.5rem;
+      font-size:.62rem;letter-spacing:.08em;
+      color:rgba(181,168,152,.3);
+      line-height:1.7;
+      max-width:340px;
+    }
+    .wl-privacy a{color:rgba(181,168,152,.45);text-decoration:none;transition:color .3s;}
+    .wl-privacy a:hover{color:var(--amber);}
+
+    /* Links below */
+    .wl-explore{
+      margin-top:4rem;
+      display:flex;gap:2rem;
+      opacity:0;animation:fadeUp .8s 1.3s forwards;
+    }
+    .wl-explore a{
+      font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+      color:rgba(181,168,152,.4);text-decoration:none;
+      transition:color .4s;
+      display:flex;align-items:center;gap:.5rem;
+    }
+    .wl-explore a:hover{color:var(--amber);}
+    .wl-explore a i{font-size:.55rem;}
+
+    @keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+
+    footer{padding:2.5rem 3rem;border-top:1px solid rgba(181,168,152,.08);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;}
+    .footer-logo{font-family:var(--serif);font-size:1.1rem;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;text-decoration:none;}
+    .footer-socials{display:flex;gap:1.5rem;}
+    .footer-socials a{color:rgba(181,168,152,.35);font-size:.85rem;text-decoration:none;transition:color .4s;}
+    .footer-socials a:hover{color:var(--gold);}
+    .footer-privacy{font-size:.62rem;letter-spacing:.1em;color:rgba(181,168,152,.25);}
+
+    @media(max-width:900px){
+      .waitlist-page{grid-template-columns:1fr;min-height:auto;}
+      .waitlist-left{padding:7rem 2rem 4rem;}
+      .waitlist-right{padding:4rem 2rem 5rem;}
+      .waitlist-right::before{display:none;}
+      footer{padding:2.5rem 1.5rem;}
+    }
+    @media(max-width:480px){
+      .nav-links{display:none;}
+      nav{padding:1.5rem 1.5rem;}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <div class="page-veil" id="pageVeil"></div>
+
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo" data-link>Amréa</a>
+    <ul class="nav-links">
+      <li><a href="story.html" data-link>The Story</a></li>
+      <li><a href="scent.html" data-link>The Scent</a></li>
+      <li><a href="waitlist.html" data-link class="active">Reserve</a></li>
+    </ul>
+  </nav>
+
+  <div class="waitlist-page">
+
+    <!-- LEFT -->
+    <div class="waitlist-left">
+      <div class="wl-left-content">
+        <h1 class="wl-brand">AMRÉA</h1>
+        <p class="wl-tagline">Perfumes that arrive.</p>
+
+        <div class="wl-counter-block">
+          <span class="wl-counter-label">First collection</span>
+          <div class="wl-counter-wrap">
+            <span class="wl-num" id="wlCounter">23</span>
+            <span class="wl-of">&thinsp;/</span>
+            <span class="wl-total">&thinsp;40</span>
+          </div>
+          <p class="wl-counter-caption">spots remaining</p>
+
+          <div class="wl-progress">
+            <div class="wl-progress-track">
+              <div class="wl-progress-fill" id="progressFill"></div>
+            </div>
+            <div class="wl-progress-labels">
+              <span>0</span>
+              <span>17 reserved</span>
+              <span>40</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="wl-scarcity">The first collection is limited to forty bottles. It will not be restocked. This is not a strategy — it is simply the honest limit of what can be made well in small quantity.</p>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="waitlist-right">
+      <span class="wl-form-eyebrow">Reserve</span>
+      <h2 class="wl-form-heading">For those<br/>who notice.</h2>
+      <p class="wl-form-sub">Leave your address. When your bottle is ready, you will receive a single quiet message — nothing before that.</p>
+
+      <!-- FORM -->
+      <form class="wl-form" id="reserveForm">
+        <div class="wl-field">
+          <label class="wl-label" for="wl-email">Email address</label>
+          <input class="wl-input" type="email" id="wl-email" placeholder="your@email.com" required />
+        </div>
+        <button type="submit" class="wl-submit">Reserve my bottle</button>
+      </form>
+
+      <!-- SUCCESS -->
+      <div class="wl-success" id="wlSuccess">
+        <div class="wl-success-icon"><i class="fa-regular fa-circle-check"></i></div>
+        <h3 class="wl-success-title">Noted.</h3>
+        <p class="wl-success-msg">Your place is held. You will hear from us once, when your bottle is ready. No other messages will follow.</p>
+      </div>
+
+      <p class="wl-privacy">
+        By entering your address you agree to receive one message, when and only when your reservation is ready to complete. We do not share your data, and we do not use it for any other purpose. <a href="#">Privacy notice</a>.
+      </p>
+
+      <div class="wl-explore">
+        <a href="story.html" data-link><i class="fa-solid fa-arrow-left"></i> The Story</a>
+        <a href="scent.html" data-link>The Scent <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <a href="index.html" class="footer-logo" data-link>Amréa</a>
+    <div class="footer-socials">
+      <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+    </div>
+    <p class="footer-privacy">Privacy · GDPR · © AMRÉA</p>
+  </footer>
+
+  <script>
+    const cursor=document.getElementById('cursor');
+    const ring=document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+    function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cursor.style.left=mx+'px';cursor.style.top=my+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);}
+    anim();
+    document.querySelectorAll('a,button').forEach(el=>{
+      el.addEventListener('mouseenter',()=>{cursor.style.width='18px';cursor.style.height='18px';ring.style.width='54px';ring.style.height='54px';});
+      el.addEventListener('mouseleave',()=>{cursor.style.width='10px';cursor.style.height='10px';ring.style.width='36px';ring.style.height='36px';});
+    });
+
+    const navbar=document.getElementById('navbar');
+    let lastScroll=0;
+    window.addEventListener('scroll',()=>{
+      const cur=window.scrollY;
+      if(cur>lastScroll&&cur>80)navbar.classList.add('hidden');else navbar.classList.remove('hidden');
+      if(cur>30)navbar.classList.add('scrolled');else navbar.classList.remove('scrolled');
+      lastScroll=cur;
+    });
+
+    // animated counter
+    function animCount(el,target,dur){
+      let start=null;
+      const step=ts=>{
+        if(!start)start=ts;
+        const p=Math.min((ts-start)/dur,1);
+        el.textContent=Math.floor(p*target);
+        if(p<1)requestAnimationFrame(step);else el.textContent=target;
+      };
+      requestAnimationFrame(step);
+    }
+    const counterEl=document.getElementById('wlCounter');
+    setTimeout(()=>animCount(counterEl,23,1600),800);
+
+    // progress bar
+    setTimeout(()=>{
+      const fill=document.getElementById('progressFill');
+      if(fill)fill.style.width='57.5%';
+    },1200);
+
+    // form
+    document.getElementById('reserveForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      const email=document.getElementById('wl-email').value;
+      // Brevo webhook integration point:
+      // fetch('YOUR_BREVO_WEBHOOK_URL',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+      document.getElementById('reserveForm').style.display='none';
+      const success=document.getElementById('wlSuccess');
+      success.classList.add('visible');
+    });
+
+    const veil=document.getElementById('pageVeil');
+    document.querySelectorAll('[data-link]').forEach(link=>{
+      link.addEventListener('click',e=>{
+        e.preventDefault();
+        const href=link.getAttribute('href');
+        veil.classList.add('active');
+        setTimeout(()=>{window.location.href=href;},500);
+      });
+    });
+    window.addEventListener('pageshow',()=>{setTimeout(()=>veil.classList.remove('active'),80);});
+  </script>
+</body>
+</html>
